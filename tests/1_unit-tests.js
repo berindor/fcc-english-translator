@@ -2,7 +2,7 @@ const chai = require('chai');
 const assert = chai.assert;
 
 const Translator = require('../components/translator.js');
-let { amToBrit, britToAm, addHighlight } = new Translator();
+const { amToBrit, britToAm, addHighlight } = new Translator();
 
 suite('Unit Tests', () => {
   suite('Translate American to British English', () => {
