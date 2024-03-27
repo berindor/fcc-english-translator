@@ -2,7 +2,7 @@ const chai = require('chai');
 const assert = chai.assert;
 
 const Translator = require('../components/translator.js');
-let { amToBrit, britToAm } = new Translator();
+let { amToBrit, britToAm, addHighlight } = new Translator();
 
 suite('Unit Tests', () => {
   suite('Translate American to British English', () => {
@@ -110,9 +110,29 @@ suite('Unit Tests', () => {
     });
   });
   suite('Highlighting', () => {
-    test(`Mangoes are my favorite fruit. => highlight ""`, () => {});
-    test(`I ate yogurt for breakfast. => highlight ""`, () => {});
-    test(`We watched the footie match for a while. => highlight ""`, () => {});
-    test(`Paracetamol takes up to an hour to work. => highlight ""`, () => {});
+    test(`Mangoes are my favorite fruit. => highlight "favourite" if amToBrit`, () => {
+      const amString = 'Mangoes are my favorite fruit.';
+      const highlitedString = 'Mangoes are my <span class="highlight">favourite</span> fruit.';
+      assert.equal(addHighlight(amString, amToBrit(amString)), highlitedString, 'highlight translation');
+      assert.equal(addHighlight(amString, britToAm(amString)), 'Everything looks good to me!', 'everything good when no translation needed');
+    });
+    test(`I ate yogurt for breakfast. => highlight "yoghurt" if amToBrit`, () => {
+      const amString = 'I ate yogurt for breakfast.';
+      const highlitedString = 'I ate <span class="highlight">yoghurt</span> for breakfast.';
+      assert.equal(addHighlight(amString, amToBrit(amString)), highlitedString, 'highlight translation');
+      assert.equal(addHighlight(amString, britToAm(amString)), 'Everything looks good to me!', 'everything good when no translation needed');
+    });
+    test(`We watched the footie match for a while. => highlight "soccer" if britToAm`, () => {
+      const britString = 'We watched the footie match for a while.';
+      const highlitedString = 'We watched the <span class="highlight">soccer</span> match for a while.';
+      assert.equal(addHighlight(britString, britToAm(britString)), highlitedString, 'highlight translation');
+      assert.equal(addHighlight(britString, amToBrit(britString)), 'Everything looks good to me!', 'everything good when no translation needed');
+    });
+    test(`Paracetamol takes up to an hour to work. => highlight "Tylenol" if britToAm`, () => {
+      const britString = 'Paracetamol takes up to an hour to work.';
+      const highlitedString = '<span class="highlight">Tylenol</span> takes up to an hour to work.';
+      assert.equal(addHighlight(britString, britToAm(britString)), highlitedString, 'highlight translation');
+      assert.equal(addHighlight(britString, amToBrit(britString)), 'Everything looks good to me!', 'everything good when no translation needed');
+    });
   });
 });
