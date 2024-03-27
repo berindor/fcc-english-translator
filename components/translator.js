@@ -8,13 +8,9 @@ class Translator {
   amToBrit(inputString) {
     //This does not work:
     //search for each object keys of the lists to include
-    //does not work because of the order of words: momma, mom --> ok, but rif, rif'd --> not ok
+    //does not work because of the order of words: "momma", "mom" --> ok, but "rif", "rif'd" --> not ok
 
-    const numOfWords = Object.keys(americanOnly).map(key => key.split(' ').length);
-    //console.log(`numOfWords: ${numOfWords}`);
-    //console.log(`longest multiple word is ${Math.max(...numOfWords)} long`);
-
-    const findTranslation = wordString => {
+    const findTranslationToBrit = wordString => {
       let stringToTranslate = wordString.toLowerCase();
       let translation;
       if (americanToBritishTitles[stringToTranslate] !== undefined) {
@@ -28,6 +24,10 @@ class Translator {
       if (americanOnly[stringToTranslate] !== undefined) {
         translation = americanOnly[stringToTranslate];
       }
+      if (/^[0-9]{1,2}\:[0-9]{2}$/.test(stringToTranslate)) {
+        const indexOfColon = stringToTranslate.search(/\:/);
+        translation = stringToTranslate.slice(0, indexOfColon) + '.' + stringToTranslate.slice(indexOfColon + 1, stringToTranslate.length);
+      }
 
       if (translation === undefined) return wordString;
 
@@ -39,13 +39,11 @@ class Translator {
         return translatedWord + '.';
       }
       return translatedWord;
-      //TODO: times
-      //split by ' and - (?)
     };
 
     const wordsGrouped = (arr, groupSize, start) => {
       let arrOfGroups = [];
-      //add words before start separately
+      //push words separately before start
       for (let i = 0; i < start; i++) {
         arrOfGroups.push(arr[i]);
       }
@@ -65,7 +63,7 @@ class Translator {
         do {
           previousSentence = sentence;
           arrOfTerms = wordsGrouped(previousSentence.split(/\s+/), groupSize, start);
-          sentence = arrOfTerms.map(term => findTranslation(term)).join(' ');
+          sentence = arrOfTerms.map(term => findTranslationToBrit(term)).join(' ');
           //length of terms can change in this steps --> iteration needed
         } while (sentence !== previousSentence);
       }
@@ -75,6 +73,10 @@ class Translator {
   }
 
   britToAm(inputString) {
+    const numOfWords = Object.keys(americanOnly).map(key => key.split(' ').length);
+    //console.log(`numOfWords: ${numOfWords}`);
+    //console.log(`longest multiple word is ${Math.max(...numOfWords)} long`);
+
     return inputString;
   }
 }
